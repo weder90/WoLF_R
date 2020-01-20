@@ -1,0 +1,17 @@
+Package: WoLF
+Type: Package
+Title: Working on larger foraminifera - a biometric package
+Version: 0.1.0
+Author: Wolfgang Eder
+Maintainer: Wolfgang Eder <wolfgang.eder@edu.unige.it>
+Description: Reads morphometric data of larger foraminifera
+  from excel sheets and computes growth-independent and growth-
+  invariant characters after Hohenegger(2011) "Growth-invariant meristic 
+  characters tools to reveal phylogenetic relationships in Nummulitidae (Foraminifera)"
+  and later amendments by Hohenegger and Torres (2017), Torres et al. (2019) and Eder et al. (2018)
+Depends: R (>= 3.5.0)
+Imports: naniar, readxl, dplyr, nls2, proto, ggplot2, ggpubr, minpack.lm
+License: CC0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
