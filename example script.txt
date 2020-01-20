@@ -1,0 +1,57 @@
+library(WoLF)
+library(naniar)
+library(readxl)
+library(dplyr)
+library(nls2)
+library(proto)
+library(ggplot2)
+library(ggpubr)
+library(roxygen2)
+library(minpack.lm)
+sheets<-c("summary","marginal radius","chamber base length","backbend angle","septal angle", "chamber area", "chamber perimeter")
+ReadInSpiral (Inputpath = "C:/Users/user/Desktop/Input_data.xlsx",Inputsheets = sheets,sheetlength = 52,rad_degree=T)
+ReadInChamberlets(Inputpath = "C:/Users/user/Desktop/Input_data.xlsx",Inputsheet = "chamberlets",v.length = 52,from="A",to="ET")
+
+ParamMean(BBA)
+ParamMean(SA)
+ParamMean(PR)
+
+EstParamCL(print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot = NULL )
+EstParamMR(print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL )
+EstParamCBL(print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL )
+
+ParamPRCtL()
+
+EstParamCtN(print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL )
+EstParamCtL(startMM1=c(100,200),startMM2=c(-1,1),print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL,dev_plot_Ct = NULL)
+EstParamACtH(approach = T,print.mod = F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL,dev_plot_Ct = NULL)
+
+ReadInTF("C:/Users/user/Desktop/Input_data.xlsx","thickness",from = "A",to="D",nolines = 101,nopoints = 5)
+EstTF(estMTH = T,print.mod=F,path_plot ="C:/Users/user/Desktop/ggplots",dev_plot =NULL )
+
+Sum$DR<-Sum$DW/Sum$PH
+
+write.table(Sum, "C:/Users/user/Desktop/casestudy_equatorial.csv",dec=".",sep=";",row.names =TRUE )
+write.table(TF_param, "C:/Users/user/Desktop/casestudy_axial.csv",dec=".",sep=";",row.names =TRUE )
+
+specimens<-Sum$code
+Sum2<-Sum[,8:28]
+group<-c("H. antillea","H. antillea","H. antillea","H. antillea","H. depressa 20 m","H. depressa 20 m"
+         ,"H. depressa 30 m","H. depressa 30 m","H. depressa 60 m","H. texana","H. texana","H. texana"
+         ,"H. texana","H. israelskyi","H. texana","H. panamensis","H. depressa 20 m","H. depressa 20 m"
+         ,"H. depressa 20 m","H. depressa 40 m","H. depressa 40 m","H. depressa 40 m","H. depressa 60 m"
+         ,"H. depressa 60 m","H. depressa 60 m","H. depressa 80 m","H. depressa 80 m","H. depressa 80 m"
+         ,"H. depressa 20 m","H. depressa 40 m","H. depressa 60 m","H. depressa 80 m")
+
+library(MASS)
+library(ggplot2)
+train<-cbind(Sum2,group)
+wolf<-lda(train$group ~.,data=train)
+wolf.lda.values<-predict(wolf)
+
+newdata<-data.frame(type = train[,22],lda=wolf.lda.values$x)
+ggplot(newdata) + geom_point(aes(lda.LD1, lda.LD2, colour = type), size = 3, shape = 18) +
+  xlim(c(-150,50)) + ylim(c(-25,25)) +
+  labs(x = "LD1 (91.7%)",y = "LD2 (4.3%)") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                                   panel.background = element_blank(), axis.line = element_line(colour = "black"))
+ 
